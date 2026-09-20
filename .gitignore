@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+
+# Jupyter
+.ipynb_checkpoints
+
+# Virtualenv
+venv/
+.env
+
+# Mac
+.DS_Store
+
+# Logs and databases
+*.log
+*.sqlite3
+
+# IDE
+.vscode/
