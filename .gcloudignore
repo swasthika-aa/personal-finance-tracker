@@ -1,0 +1,14 @@
+.gcloudignore
+.git
+.venv
+venv
+data
+outputs
+notebooks
+tests
+docs
+infra
+**/__pycache__
+**/*.egg-info
+.env
+*service-account*.json

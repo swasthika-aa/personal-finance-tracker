@@ -1,0 +1,8 @@
+project_id         = "your-sandbox-project-id"
+region             = "us-central1"
+name               = "finance-demo"
+dataset_id         = "finance_demo"
+deploy_job         = false
+image              = ""
+schedule_enabled   = false
+allow_data_destroy = false

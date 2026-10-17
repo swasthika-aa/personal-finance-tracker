@@ -1,0 +1,15 @@
+.git
+.venv
+venv
+data
+outputs
+notebooks
+tests
+docs
+infra
+**/__pycache__
+**/*.egg-info
+.env
+*.sqlite3
+*.tfstate*
+*service-account*.json
