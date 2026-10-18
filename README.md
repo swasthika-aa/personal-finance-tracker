@@ -1,61 +1,72 @@
 # Personal Finance Tracker
 
-A notebook-first bachelor's data science project implementing the workflow in
-[Abstract.md](Abstract.md): multi-year transaction ingestion, preprocessing, document
-storage, exploratory analysis, categorization, anomaly review, forecasting, and reporting.
+A local, notebook-first bachelor's data science project: five years of synthetic
+bank transactions, CSV/JSON preprocessing, SQLite document storage, exploratory
+analysis, expense categorization, anomaly review, forecasting, and exportable reports.
 
-## Recommended Demo
+**Recommended demo:** run Jupyter with Python locally. Use Docker Compose when you
+want the same notebook and batch workflow without installing Python on another machine.
+No external account, credentials, paid service, GPU, or dataset download is required.
 
-**Use local Python and Jupyter as the assessed demonstration.** Everything analytical
-runs without GCP, Kaggle, Docker, GPUs, or downloaded datasets. A fixed-seed synthetic
-dataset supplies five years and 4,320 valid transactions, plus intentional data-quality
-problems. No private financial information is needed.
+## Run with Python
 
-**Use GCP only for the cloud extension.** Terraform defines Cloud Storage, Firestore,
-BigQuery, Artifact Registry, a Cloud Run Job, Cloud Scheduler, IAM, and logging through
-managed services. These are appropriate examples of storage and batch automation;
-Kubernetes, streaming brokers, and microservices would add little academic value here.
-The notebook remains the presentation surface, even when the batch processing runs on GCP.
+Use **Python 3.14**, the verified runtime for the pinned dependency snapshot. The package
+declares Python 3.11+ support through dependency resolution, but other versions are not
+verified here. Run commands from this repository's root.
 
-**Kaggle is not required.** It can host an optional anonymized dataset or notebook, but
-synthetic data is sufficient for a reliable demo. Kaggle notebooks and Google Colab are
-alternative notebook runtimes, not required infrastructure. See [docs/DEMO.md](docs/DEMO.md).
-
-## Quick Start
-
-Use **Python 3.14** for the verified dependency snapshot and container. The package
-declares Python 3.11+ compatibility with dependency resolution, but those other Python
-versions have not been verified here. Run these commands in the cloned project root.
+When upgrading an older environment, prefer creating a fresh virtual environment.
+Reinstalling a smaller dependency set does not uninstall previously installed extras;
+the current package and dependency snapshot no longer require those old libraries.
 
 Windows PowerShell:
 
 ```powershell
 py -3.14 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -c requirements-lock.txt -e ".[dev,gcp]"
+.\.venv\Scripts\python.exe -m pip install -c requirements-lock.txt -e ".[dev]"
 .\.venv\Scripts\python.exe -m jupyterlab notebooks/finance_demo.ipynb
 ```
 
-macOS/Linux with Python 3.14 installed:
+macOS/Linux:
 
 ```bash
 python3.14 -m venv .venv
-.venv/bin/python -m pip install -c requirements-lock.txt -e '.[dev,gcp]'
+.venv/bin/python -m pip install -c requirements-lock.txt -e '.[dev]'
 .venv/bin/python -m jupyterlab notebooks/finance_demo.ipynb
 ```
 
-Select the environment's Python kernel, then **Restart Kernel and Run All Cells**.
+Open the localhost URL printed by Jupyter and select **Restart Kernel and Run All Cells**.
 For VS Code, open [notebooks/finance_demo.ipynb](notebooks/finance_demo.ipynb), select
-`.venv` using the kernel picker, and run all cells. Run Jupyter only on localhost;
-do not publish the server token or disable authentication.
+the `.venv` kernel, and run all cells. Keep Jupyter authentication enabled and do not
+share the server token. Initial package installation needs Internet; the installed
+synthetic-data demonstration does not access external services.
 
-The `gcp` extra installs optional client libraries; it does not create resources,
-authenticate, or incur costs. Local-only users can install `.[dev]` instead, omitting
-cloud tests. `requirements-lock.txt` constrains exact observed versions; `pyproject.toml`
-declares intended compatible ranges. The snapshot includes Windows-only markers.
+## Run with Docker
 
-## Commands
+Install Docker with Compose v2 and use Linux containers. Create writable input/output
+directories first. Windows PowerShell:
 
-After activating the virtual environment, these commands work on all platforms:
+```powershell
+New-Item -ItemType Directory -Force data, outputs
+docker compose up --build notebook
+```
+
+Linux/macOS shell (use the host user's IDs for writable bind mounts):
+
+```bash
+mkdir -p data outputs
+export LOCAL_UID=$(id -u)
+export LOCAL_GID=$(id -g)
+docker compose up --build notebook
+```
+
+Open `http://localhost:8888` using the token shown in the container log. The notebook
+is available under `notebooks/finance_demo.ipynb`. Input data, reports, and notebook
+edits persist on your host. See [docs/DOCKER.md](docs/DOCKER.md) for batch runs,
+HTML export, alternate ports, file permissions, and cleanup.
+
+## Batch Processing and Verification
+
+After activating the virtual environment:
 
 ```bash
 finance-demo --generate-demo
@@ -63,75 +74,75 @@ python -m pytest -q -W error
 python scripts/execute_notebook.py
 ```
 
-Without activation, replace `python` with the virtual environment's Python path;
-replace `finance-demo` with `python -m finance_tracker.pipeline` using that same Python.
-The notebook execution script writes a fresh executed notebook and static HTML report.
-The source notebook stays free of generated outputs. Widgets require a live kernel;
-HTML captures charts and tables, not a fully live interactive dashboard.
+Without activation, use the environment's Python path and
+`python -m finance_tracker.pipeline --generate-demo`. Container equivalents:
 
-Generated files in ignored `outputs/`:
+```bash
+docker compose run --rm batch
+docker compose run --rm batch python scripts/execute_notebook.py
+```
 
-| File | Purpose |
-| --- | --- |
-| `metrics.json` | Cleaning audit, model scores, baselines, and evaluation cutoffs |
-| `categorized_transactions.csv` | Original labels, model predictions, and effective labels |
-| `monthly.csv` | Monthly analytical mart and cash-flow reconciliation |
-| `forecast.csv`, `forecast_backtest.csv` | Future estimates and rolling evaluation |
-| `anomalies.csv` | Review flags, scores, and holdout membership |
-| `overview.png` | Exportable analytical overview |
-| `transactions.sqlite3` | Local JSON document store with nested receipts |
-| `notebook_activities.md` | Timestamped notebook execution explanations and results |
-| `finance_demo.executed.ipynb`, `finance_demo.html` | Produced by the notebook execution script |
+Do not run batch and notebook processing simultaneously against the same output directory.
+The notebook runner exports `outputs/finance_demo.executed.ipynb` and
+`outputs/finance_demo.html`. Charts and tables work in HTML; live widgets need a kernel.
 
-## Architecture
+## Local Architecture
 
 ```mermaid
 flowchart LR
     CSV[Bank CSVs] --> PY[Shared Python pipeline]
     JSON[Receipt JSON] --> PY
     NB[Jupyter notebook] --> PY
-    PY --> SQL[(Local SQLite JSON documents)]
-    PY --> MART[Monthly Pandas marts]
+    CLI[Local CLI or Docker batch] --> PY
+    PY --> DB[(SQLite JSON documents)]
+    PY --> MART[Pandas monthly mart]
     MART --> ML[Chronological ML evaluation]
-    ML --> REPORT[Charts, CSVs, metrics, HTML]
-    SCHED[Optional Cloud Scheduler] --> JOB[Cloud Run Job: same pipeline]
-    GCS[(Cloud Storage raw inputs)] --> JOB
-    JOB --> FS[(Firestore documents)]
-    JOB --> BQ[(BigQuery monthly mart)]
-    JOB --> GCSR[(Cloud Storage reports)]
-    JOB --> LOG[Cloud Logging]
-    NB -. opt-in cloud clients .-> GCS
-    NB -. opt-in results query .-> BQ
+    ML --> REPORT[Local charts, CSVs, metrics and HTML]
+    NB --> LOG[Markdown execution log]
 ```
 
-## Study Design and Scope
+| Responsibility | Implementation |
+| --- | --- |
+| Input landing area | Local `data/` CSV and JSON files |
+| Transaction documents and receipts | `outputs/transactions.sqlite3` with stable-ID upserts |
+| Analytical mart | Pandas aggregations and `outputs/monthly.csv` |
+| Repeatable processing | Shared `finance-demo` command or Docker batch service |
+| Presentation | JupyterLab or VS Code notebook, optionally inside Docker |
+| Observability | Console output, metrics JSON, and notebook activity Markdown |
+| Automation | Explicit batch runs; optional operating-system scheduling |
 
-- Classification: TF-IDF text plus scaled expense, Logistic Regression, chronological
-  80/20 holdout, macro F1, confusion matrix, and majority-class baseline.
-- Anomalies: Isolation Forest trained on earlier spending, with synthetic injected
-  labels used only for later-period precision and recall.
-- Forecast: lagged expense and calendar features, standardized Ridge regression,
-  rolling 12-month one-step MAE versus seasonal naive, and six recursive future months.
-- The notebook provides year/category controls and budget-reduction scenarios.
-- Predictions are exported separately from recorded labels. Unknown labels can use
-  predictions, but the supervised experiment requires historically labelled expenses.
-- SQLite is not NoSQL at distributed scale; it demonstrates local JSON persistence.
-  Firestore is the optional actual NoSQL service. Pandas is in-memory, not a distributed
-  engine; BigQuery is the optional warehouse extension. This is not a big-data benchmark.
-- Repeated merchants make synthetic categorization easy. Results are not validated
-  on real bank data. Flags are not fraud determinations. Forecast bands are heuristic,
-  not calibrated confidence intervals. This is not financial advice.
+## Outputs and Study Design
 
-## Project Guide
+The default seeded dataset has 4,320 valid transactions plus intentional missing values,
+duplicates, and an invalid date. Generated inputs and outputs are excluded from Git.
 
-- [ACTIVITIES.md](ACTIVITIES.md): ongoing implementation/setup log and observed checks.
-- [docs/DEMO.md](docs/DEMO.md): presentation sequence, real-input schema, notebook hosting.
-- [docs/GCP.md](docs/GCP.md): account-independent setup, deployment, costs, and teardown.
-- [config/demo.json](config/demo.json): seed, years, currency, and forecast horizon.
-- [src/finance_tracker](src/finance_tracker): reusable ingestion, analytics, CLI, and cloud adapters.
-- [tests](tests): preprocessing, persistence, chronology, end-to-end, and mocked cloud tests.
+- `metrics.json`: cleaning audit, chronological holdout metrics, and baselines.
+- `categorized_transactions.csv`: recorded labels, predictions, and effective labels.
+- `monthly.csv`: income, spending, net cash flow, savings rate, and cumulative cash flow.
+- `forecast.csv` and `forecast_backtest.csv`: estimates and rolling evaluation.
+- `anomalies.csv`: review flags, scores, and holdout membership.
+- `overview.png`: exportable chart overview.
+- `transactions.sqlite3`: local JSON documents and nested receipts.
+- `notebook_activities.md`: timestamped processing explanations and observed results.
 
-Generated inputs, reports, credentials, and Terraform state are ignored. Commit only
-code, documentation, the source notebook, generic configuration, and dependency locks.
-No cloud deployment has been performed automatically. See the activity log for the
-precise distinction between verified local behavior and unverified cloud behavior.
+Classification uses TF-IDF and scaled expense with Logistic Regression, chronological
+holdout macro F1, and a majority baseline. Isolation Forest provides anomaly review.
+Ridge forecasting uses lagged spending, a rolling MAE evaluation, and a seasonal-naive
+baseline. Year/category filters and budget scenarios are interactive in the notebook.
+
+Synthetic repeated merchants make classification easier than real life. Anomaly flags
+are not fraud determinations; forecast bands are heuristic. Pandas is in-memory and
+SQLite is not distributed NoSQL. The project does not claim production scale or provide
+financial advice. See [Abstract.md](Abstract.md) for the revised assessed scope.
+
+## Guides
+
+- [docs/DEMO.md](docs/DEMO.md): viva sequence, input schema, privacy, and limitations.
+- [docs/DOCKER.md](docs/DOCKER.md): local container setup and operations.
+- [ACTIVITIES.md](ACTIVITIES.md): ongoing implementation/setup explanation log.
+- [config/demo.json](config/demo.json): seed, data years, currency, and forecast horizon.
+- [future-cloud-scope/README.md](future-cloud-scope/README.md): inactive future material,
+  excluded from the package, tests, active CI, and container context.
+
+The original supplied abstract and prior implementation history are retained in that
+archive. Only this local Python/Jupyter/Docker workflow is currently supported.

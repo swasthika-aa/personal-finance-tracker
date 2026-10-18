@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "personal-finance-tracker"
 version = "0.1.0"
-description = "Notebook-first personal finance analytics with optional GCP batch processing"
+description = "Notebook-first local personal finance analytics"
 requires-python = ">=3.11"
 dependencies = [
   "numpy>=2.3,<3",
@@ -22,7 +22,6 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.4,<10"]
-gcp = ["google-cloud-storage>=3,<4", "google-cloud-firestore>=2.21,<3", "google-cloud-bigquery>=3.35,<4"]
 
 [project.scripts]
 finance-demo = "finance_tracker.pipeline:main"
@@ -32,3 +31,4 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+norecursedirs = ["future-cloud-scope", ".*", "venv", "data", "outputs", "build", "dist", "*.egg-info"]

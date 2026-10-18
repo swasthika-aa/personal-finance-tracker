@@ -1,5 +1,10 @@
 # Optional GCP Deployment
 
+> Historical reference only. This guide describes the previous repository layout.
+> Cloud code and infrastructure now live in the inactive archive; the active package
+> has no GCP extra or cloud CLI mode. Do not follow these deployment commands against
+> the current checkout. Read the [archive status](../README.md) first.
+
 The local notebook is complete without this extension. Use a dedicated **billing-enabled
 sandbox project**, synthetic inputs, and a reviewed budget. No resources are provisioned
 by running the default notebook. There are no account-specific project IDs, keys,

@@ -4,7 +4,7 @@ import pytest
 
 from finance_tracker.analytics import classify_expenses, forecast_expenses, monthly_mart
 from finance_tracker.data import generate_demo, ingest
-from finance_tracker.pipeline import run_pipeline
+from finance_tracker.pipeline import main, run_pipeline
 
 
 def test_end_to_end_pipeline(tmp_path):
@@ -49,3 +49,15 @@ def test_classifier_holdout_is_strictly_later(tmp_path):
     frame, _ = ingest(tmp_path)
     result = classify_expenses(frame)
     assert (result["test"].date >= pd.Timestamp(result["metrics"]["cutoff"])).all()
+
+
+def test_cli_exposes_local_execution_only(monkeypatch, capsys):
+    monkeypatch.setattr("sys.argv", ["finance-demo", "--help"])
+    with pytest.raises(SystemExit) as stopped:
+        main()
+    assert stopped.value.code == 0
+    assert "--cloud" not in capsys.readouterr().out
+    monkeypatch.setattr("sys.argv", ["finance-demo", "--cloud"])
+    with pytest.raises(SystemExit) as stopped:
+        main()
+    assert stopped.value.code == 2

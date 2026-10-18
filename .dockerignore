@@ -3,13 +3,13 @@
 venv
 data
 outputs
-notebooks
 tests
 docs
-infra
+future-cloud-scope
+.github
+.pytest_cache
+**/.ipynb_checkpoints
 **/__pycache__
 **/*.egg-info
 .env
 *.sqlite3
-*.tfstate*
-*service-account*.json

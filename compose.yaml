@@ -1,0 +1,38 @@
+x-demo: &demo
+  image: personal-finance-demo:local
+  build: .
+  init: true
+  user: "${LOCAL_UID:-10001}:${LOCAL_GID:-10001}"
+  working_dir: /app
+  volumes:
+    - type: bind
+      source: ./data
+      target: /app/data
+      bind:
+        create_host_path: false
+    - type: bind
+      source: ./outputs
+      target: /app/outputs
+      bind:
+        create_host_path: false
+    - type: bind
+      source: ./notebooks
+      target: /app/notebooks
+      bind:
+        create_host_path: false
+
+services:
+  notebook:
+    <<: *demo
+    ports:
+      - "127.0.0.1:${NOTEBOOK_PORT:-8888}:8888"
+    healthcheck:
+      test: ["CMD", "python", "-c", "from urllib.request import urlopen; urlopen('http://127.0.0.1:8888/login', timeout=5).close()"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+  batch:
+    <<: *demo
+    profiles: [batch]
+    command: ["python", "-m", "finance_tracker.pipeline", "--generate-demo", "--input-dir", "data/demo", "--output-dir", "outputs", "--config", "config/demo.json"]

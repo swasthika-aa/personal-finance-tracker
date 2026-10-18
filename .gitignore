@@ -25,9 +25,3 @@ data/
 outputs/
 *.egg-info/
 .pytest_cache/
-.terraform/
-*.tfstate*
-*.tfplan
-terraform.tfvars
-application_default_credentials.json
-*service-account*.json

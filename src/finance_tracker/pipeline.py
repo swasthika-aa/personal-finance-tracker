@@ -43,22 +43,11 @@ def main():
     parser.add_argument("--output-dir", type=Path, default=Path("outputs"))
     parser.add_argument("--generate-demo", action="store_true")
     parser.add_argument("--config", type=Path, default=Path("config/demo.json"))
-    parser.add_argument("--cloud", action="store_true", help="Explicitly download from and publish to GCP")
     args = parser.parse_args()
     config = json.loads(args.config.read_text(encoding="utf-8"))
-    if args.cloud and args.generate_demo:
-        parser.error("Generate synthetic fixtures locally before uploading to cloud storage")
     if args.generate_demo:
         generate_demo(args.input_dir, seed=config["seed"], years=config["years"])
-    if args.cloud:
-        from finance_tracker.cloud import download_inputs
-
-        download_inputs(args.input_dir)
     result = run_pipeline(args.input_dir, args.output_dir, config["currency"], config["forecast_months"])
-    if args.cloud:
-        from finance_tracker.cloud import publish
-
-        publish(result, args.output_dir)
     print(json.dumps(result["metrics"], indent=2))
 
 

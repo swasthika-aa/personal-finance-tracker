@@ -1,36 +1,54 @@
-Scalable Multi-Year Personal Finance Tracker and Predictive Visualizer Using Data Science, Machine Learning, Cloud Integration, NoSQL, and Big Data Analytics
+# Multi-Year Personal Finance Tracker and Predictive Visualizer Using Python, Jupyter, and Machine Learning
 
 ## Abstract
 
-Managing long-term financial health requires scalable data architectures, automated ingestion pipelines, and predictive analytics capable of processing multi-year transactional logs. This project develops an end-to-end personal finance tracking, categorization, and forecasting platform built in a Jupyter Notebook environment. Grounded in core data science concepts (Introduction to Data Science, Exploratory Data Analysis), the system ingests multi-year bank transaction CSV logs, applying Data Pre-Processing Techniques to handle missing values, normalize timestamps, and perform feature scaling.
+Understanding long-term financial behavior requires reproducible data preparation,
+exploratory analysis, and careful evaluation of predictive models. This bachelor's
+data science project implements a local Jupyter-based workflow for multi-year bank
+transaction CSVs and receipt JSON. It handles missing descriptions, invalid amounts
+and timestamps, duplicate transaction IDs, and single-currency validation; normalizes
+dates to UTC; and applies training-only feature scaling within machine-learning pipelines.
+
+Transactions and nested receipt documents are stored locally as JSON in SQLite.
+Pandas constructs monthly analytical marts, while Matplotlib and Seaborn visualize
+income, expenses, category trends, and cumulative net cash flow. Supervised expense
+categorization, unsupervised anomaly review, and lag-based expense forecasting are
+evaluated chronologically against explicit baselines. Interactive notebook controls
+support category exploration and hypothetical budget scenarios.
 
 ## Highlights
 
-- Scalable architectures for processing multi-year, high-volume transactional data.
-- Automated ingestion pipelines for CSV bank logs and JSON receipts.
-- Flexible NoSQL storage for semi-structured multi-source data and analytical data marts.
-- Robust data pre-processing: missing-value handling, timestamp normalization, and feature scaling.
-- Batch and time-series aggregation using Pandas for efficient multi-year analytics.
-- Machine Learning for expense classification, anomaly detection, and budget forecasting.
-- Interactive visualizations with Matplotlib and Seaborn for trend and category analysis.
-- Cloud deployment and automation for continuous reporting and scheduled pipelines.
+- A Jupyter notebook is the central demonstration and research narrative.
+- Five years of fixed-seed synthetic transactions support a portable, privacy-safe demo.
+- CSV/JSON ingestion, preprocessing audits, and local document persistence are reproducible.
+- Monthly cash-flow marts and visualizations reveal category and time-series patterns.
+- Classification and forecasting are evaluated against simple baselines without future leakage.
+- Local command-line and optional Docker Compose execution share the notebook's Python code.
+- Metrics, CSVs, plots, HTML reports, and a Markdown activity log support assessment.
 
 ## Approach
 
-1. Ingest: Collect multi-year bank CSVs and receipt JSONs through automated pipelines.
-2. Pre-process: Clean data, handle missing values, normalize timestamps, and scale features.
-3. Store: Use NoSQL databases for flexible storage and construct analytical data marts for querying.
-4. Aggregate: Perform distributed-style batch processing and time-series aggregations with Pandas.
-5. Model: Apply supervised and unsupervised Machine Learning models for classification, anomaly detection, and forecasting.
-6. Visualize: Generate dynamic plots for net cash flow, spending breakdowns, and savings trajectories.
-7. Deploy: Host and automate Jupyter analytics pipelines in cloud environments for continuous financial reporting.
+1. Ingest full-history bank CSV exports and optional JSON receipts from local directories.
+2. Clean and validate records, normalize timestamps, and audit rejected/duplicate rows.
+3. Store transaction JSON documents and receipts in a local SQLite database.
+4. Aggregate transactions into monthly Pandas analytical marts.
+5. Evaluate expense classification, anomaly detection, and monthly expense forecasts.
+6. Explore charts, filters, and budget scenarios in Jupyter and export the results.
+7. Reproduce the workflow on another machine using pinned Python dependencies or Docker.
 
-## Outcomes
+## Outcomes and Boundaries
 
-- A reproducible Jupyter-based workflow for multi-year personal finance analytics.
-- Automated categorization and anomaly detection that improve long-term budgeting decisions.
-- Interactive dashboards and exportable visualizations suitable for cloud-hosted reporting.
+The outcome is an executable, notebook-first personal finance analytics demonstration,
+not a production financial ledger. Synthetic results do not establish accuracy on real
+bank data. SQLite JSON storage is not a distributed NoSQL service, and Pandas is not
+a distributed processing engine. Anomaly flags require human review; forecast bands
+are heuristic and do not constitute financial advice.
+
+The original broader abstract is preserved in
+[future-cloud-scope/docs/ORIGINAL_ABSTRACT.md](future-cloud-scope/docs/ORIGINAL_ABSTRACT.md).
+Future infrastructure ambitions are outside the current assessed implementation.
 
 ## Keywords
 
-Personal finance, time-series analytics, NoSQL, data pre-processing, machine learning, visualization, cloud deployment
+Personal finance, Python, Jupyter, exploratory data analysis, preprocessing,
+time-series analytics, document storage, machine learning, visualization, reproducibility
