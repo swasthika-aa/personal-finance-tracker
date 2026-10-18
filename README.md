@@ -137,6 +137,8 @@ financial advice. See [Abstract.md](Abstract.md) for the revised assessed scope.
 
 ## Guides
 
+- [docs/presentation/README.md](docs/presentation/README.md): editable project presentation
+    in PowerPoint, Word, and Markdown, with identity placeholders and actual notebook charts.
 - [docs/DEMO.md](docs/DEMO.md): viva sequence, input schema, privacy, and limitations.
 - [docs/DOCKER.md](docs/DOCKER.md): local container setup and operations.
 - [ACTIVITIES.md](ACTIVITIES.md): ongoing implementation/setup explanation log.

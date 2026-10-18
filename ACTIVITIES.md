@@ -99,3 +99,32 @@ not available here, so no image build, container execution, or browser/widget in
 inside Docker is claimed. The local container CI gates are defined but have not run here.
 No remote infrastructure was contacted or created. No commit or push was performed
 for this scope update.
+
+## 7. Prepare Academic Presentation Deliverables
+
+The requested sample attachment was not accessible, so the presentation uses a standard
+20-slide academic structure. `docs/presentation/content.json` contains the shared narrative,
+identity placeholders, observed seed-42 results, limitations, and presenter notes.
+`scripts/build_presentation.py` exports editable PowerPoint, A4 Word, and Markdown versions.
+It extracts the five actual chart images from the executed notebook instead of inventing
+experimental plots. The presentation highlights that anomaly precision is weak and that
+Docker execution remains unverified, rather than overstating project outcomes.
+
+Document-generation libraries are separate from the analytical runtime. A temporary
+environment installed `python-docx`, `python-pptx`, and `nbformat` using the dedicated
+presentation requirements; the runtime package dependencies were not changed.
+Initial generation produced all three requested companion formats with 20 slide sections.
+The final export also adds a visual local architecture diagram and A4 document settings.
+
+### Observed Presentation Verification
+
+- The exported PPTX reopens with 20 slides, all speaker notes, and four embedded charts.
+- The DOCX reopens with four charts, four tables, and identity placeholders intact.
+- The Markdown contains 20 slide sections with presenter notes and relative chart links.
+- Office ZIP integrity and slide-shape boundaries passed structural checks.
+- Native Microsoft PowerPoint rendered all 20 slides; title, architecture, preprocessing
+  table, and classification-chart layouts were visually inspected without clipping.
+- Native Microsoft Word reported 20 pages for the 20 slide sections.
+- The six active analytical tests still pass with warnings treated as errors.
+- No code errors were reported for the exporter. Runtime analytical dependencies were
+  not changed, and no commit or push was performed for these presentation additions.

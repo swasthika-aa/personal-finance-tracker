@@ -9,6 +9,7 @@ __pycache__/
 # Virtualenv
 venv/
 .venv/
+.venv-presentation/
 .env
 
 # Mac
